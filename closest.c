@@ -47,6 +47,25 @@ int main ()
 	fclose (f_inputs);
 	free (inputs);
 
+//Apenas teste de ornecacao do merge sort
+	inputs = (float*) malloc (11 * sizeof(Ponto));
+	inputs[0].x = 1;
+	inputs[1].x = 3;
+	inputs[2].x = 5;
+	inputs[3].x = 7;
+	inputs[4].x = 9;
+	inputs[5].x = 2;
+	inputs[6].x = 4;
+	inputs[7].x = 6;
+	inputs[8].x = 8;
+	inputs[9].x = 10;
+	
+	merge_sort(inputs, 0, 4, 9);
+	printf("\n----------------------------------------------------------\n");
+	for (int i = 0; i < 10; i++)
+	{
+		printf("pos %i: %f\n",i, inputs[i].x);
+	}
 }
 
 
@@ -75,4 +94,83 @@ float forca_bruta (Ponto* inputs, int size, Ponto** first, Ponto** second)
 		}
 	}
 	return dist;
+}
+
+// Funcao de ordenacao O(m+n)
+void merge_sort(Ponto* vectorPoints, int p, int r)
+{
+	// A condicao de recursao e de que a lista tenha mais que um elemento
+	if (p < r)
+	{
+		// Faz a divisao (divide a lista no meio)
+		int q = (int)(p+r)/2;
+		// Faz a ordenacao para o lado esquerdo da lista
+		merge_sort(vectorPoints, p, q);
+		//Ordena o lado direito
+		merge_sort(vectorPoints, q+1, r);
+		//Faz a unicao ordenada das duas listas
+		merge(vectorPoints, p, q, r);
+	}
+}
+
+// Funcao que ordene duas listas ordenadas: O(n)
+void merge(Ponto* vectorPoints, int p, int q, int r)
+{
+	// Define o tamanho que cada lista deve ter
+	int sizeLeft = q-p;
+	int sizeRigth = r-q -1;
+
+	// Auxiliares para colocar na lista ordenadamente
+	int posL = 0;
+	int posR = 0;
+
+	// Cria a lista auxiliar
+	Ponto* left = (float*) malloc ( (sizeLeft+1) * sizeof(Ponto));
+	Ponto* rigth = (float*) malloc ( (sizeRigth+1) * sizeof(Ponto));
+	
+	// Copia os elementos da primeira lista em uma auxiliar
+	for (int i = 0; i<= sizeLeft; i++)
+	{
+		left[i] = vectorPoints[p+i];
+	}
+	// Copia os elementos da segunda lista em uma outra auxiliar
+	for (int i = 0; i<= sizeRigth; i++)
+	{
+		rigth[i] = vectorPoints[q+i+1];
+	}
+
+	//Percorre todo o range da lista na lista original
+	for (int i = p; i<=r; i++)
+	{	
+		// Se a lista da esquerda ja tiver sido toda percorrida, coloca automaticamente os elementos da esquerda	
+		if (posL > sizeLeft)
+		{
+			// Coloca na lista original o elemento atual da lista direita
+			vectorPoints[i] = rigth[posR];
+			posR++;
+		}
+		// Faz o mesmo processo que antes, mas agora para a lista da direita
+		else if (posR > sizeRigth)
+		{
+			vectorPoints[i] = left[posL];
+			posL++;
+		}
+		// Caso ainda tenha elemento nas duas listas
+		else
+		{	
+			// Compara qual o menor elemento, e adicona ele na lista original
+			if(left[posL].x > rigth[posR].x)
+			{
+				vectorPoints[i] = rigth[posR];
+				posR++;
+			}
+			else{
+				vectorPoints[i] = left[posL];
+				posL++;
+			}
+		}
+	}
+	// Limpa o espaço alocado para as listas auxiliares
+	free(left);
+	free(rigth);
 }
