@@ -19,10 +19,10 @@ float distance (Ponto* first, Ponto* second);
 
 float forca_bruta (Ponto* inputs, int size, Ponto** first, Ponto** second);
 
-void merge(Ponto* vectorPoints, int p, int q, int r);
+void merge(Ponto** vectorPoints, int p, int q, int r, char tipo);
 
-void merge_sort(Ponto* vectorPoints, int p, int r);
+void merge_sort(Ponto** vectorPoints, int p, int r, char tipo);
 
 float divisao_e_conquista (Ponto* inputs, int size, Ponto** first, Ponto** second);
 
-float recursivo (Ponto** ord_x, int size, Ponto** ord_y, Ponto** first, Ponto** second);
+float recursivo (Ponto** ord_x, Ponto** ord_y, int size, Ponto** first, Ponto** second);
