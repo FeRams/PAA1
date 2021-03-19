@@ -29,7 +29,7 @@ int main ()
 	printf ("size: %d\n", size);
 	size = fscanf(f_inputs, "%d", &size);
 	printf ("size: %d\n", size);
-	size = 100;
+	size = 10000;
 	//aloca o espaco para o vetor de entrada
 	inputs = (float*) malloc (size * sizeof(Ponto));
 	/**********************************************/
@@ -58,7 +58,6 @@ int main ()
 	printf ("\n ---------------------------------\n");
 	//imprime no arquivo para quando formos fazer os graficos
 	fprintf(f_outputs, "%d %lf\n", size, time_spent);
-	/**********************************************/
 	/**********************************************/
 	//mede o tempo de execucao do divisao e conquista em ms
 	begin = clock();
@@ -95,12 +94,12 @@ float distance (Ponto* first, Ponto* second)
 //calcula a distancia entre todos os pontos
 float forca_bruta (Ponto* inputs, int size, Ponto** first, Ponto** second)
 {
-	int dist  = FLT_MAX;
+	float dist  = FLT_MAX;
 	for (int i=0;i<size-1;i++)
 	{
 		for(int j=i+1; j<size; j++)
 		{
-			int aux = distance (&inputs[i], &inputs[j]);
+			float aux = distance (&inputs[i], &inputs[j]);
 			if (aux < dist)
 			{
 				dist = aux;
@@ -213,42 +212,52 @@ void merge(Ponto** vectorPoints, int p, int q, int r, char tipo)
 
 float divisao_e_conquista (Ponto* inputs, int size, Ponto** first, Ponto** second)
 {
+	//-----------------------------------------------------
 	float dist;
+	//vetores usados para ordenacao em x e em y
 	Ponto** ord_x, **ord_y;
+	//-----------------------------------------------------
+	//caso em que é impossível calcular a distância
 	if (size <=1)
 	{
 		*first = NULL;
 		*second = NULL;
 		return FLT_MAX;
 	}
+	//-----------------------------------------------------
+	//aloca os vetores
 	ord_x = (Ponto**) malloc (size * sizeof(Ponto*));
 	ord_y = (Ponto**) malloc (size * sizeof(Ponto*));
+	//copia neles o vetor de entrada
 	for (int i = 0; i < size;i++)
 	{
 		ord_x[i] =  &inputs[i];
 		ord_y[i] =  &inputs[i];
 	}
+	//-----------------------------------------------------
+	//ordena os dois vetores
     merge_sort(ord_x, 0, size-1, 'x');
-	for (int i = 0; i< size; i++)
-	{
-		printf("ponto %d : (%f, %f)\n",i, ord_x[i]->x, ord_x[i]->y);
-	}
-    merge_sort(ord_y, 0, size-1, 'y');
+	merge_sort(ord_y, 0, size-1, 'y');
+	//-----------------------------------------------------
+	//chamada recursiva
     dist = recursivo (ord_x, ord_y, size, first, second);
+    //a raiz é calculada no final, por possuir uma complexidade maior
     dist = sqrt(dist);
     return dist;
 }
 
 float recursivo (Ponto** ord_x, Ponto** ord_y, int size, Ponto** first, Ponto** second)
-{
+{	
+	//-----------------------------------------------------
+	//caso base-> testa todos contra todos
 	if (size <= 3)
 	{
-		int dist  = FLT_MAX;
+		float dist  = FLT_MAX;
 		for (int i=0;i<size-1;i++)
 		{
 			for(int j=i+1; j<size; j++)
 			{
-				int aux = distance (ord_x[i], ord_x[j]);
+				float aux = distance (ord_x[i], ord_x[j]);
 				if (aux < dist)
 				{
 					dist = aux;
@@ -259,37 +268,49 @@ float recursivo (Ponto** ord_x, Ponto** ord_y, int size, Ponto** first, Ponto** 
 		}
 		return dist;
 	}
+	//-----------------------------------------------------
+	//acha a mediana de x
 	int mid = (size-1)/2;
+	//tamanho dos vetores da esquerda e direita
 	int size_l = (size+1)/2, size_r = size/2;
+	//inicializa os valores de distancia com o valor maximo
 	float d= FLT_MAX, d_l = FLT_MAX, d_r= FLT_MAX;
+	//valor da mediana de x
 	float mid_x = ord_x[mid]->x;
+	//vetores que vão ser usados para as chamadas recursivas
 	Ponto** ord_y_l, **ord_y_r;
+	//vetores que vao salvar os pontos de distancia minima na esquerda e direita
 	Ponto* left_a , *left_b, *right_a, *right_b;
+	//inicializa os vetores
 	ord_y_l = (Ponto**) malloc (size_l * sizeof(Ponto*));
 	ord_y_r = (Ponto**) malloc (size_r * sizeof(Ponto*));
+	//**************************************************************************
+	//ETAPA DE DIVISÃO
 	int l =0, r = 0;
+	//vai copiar os valores de y para novos vetores que serão usados nas chamadas recursivas
 	for (int i =0; i< size; i++)
 	{
+	//se o ponto esta na esquerda, passa o ponto para a lista de y da esquerda
 		if ((ord_y[i]->x <= mid_x|| ord_y[i] == ord_x[mid]) && l<size_l )
 		{
 			ord_y_l[l] = ord_y[i];
 			l++;
 		}
+	//se o ponto esta na direita, passa o ponto para a lista de y da direita
 		else 
 		{
 			ord_y_r[r] = ord_y[i];
 			r++;
 		}
 	}
-	//printf ("min: %f, mid: %f, max: %f\n", ord_x[0]->x, mid_x, ord_x[size-1]->x);
-    /*printf(" l: %d, r:%d", l, r);
-    scanf("%d", &aqui);
-	for (int i = 0; i< size_r; i++)
-	{
-		printf("ponto %d : (%f, %f)\n",i, ord_y_l[i]->x, ord_y_l[i]->y);
-	}*/
+	//-----------------------------------------------------
+	//chamadas recursivas
 	d_l = recursivo (ord_x, ord_y_l, size_l, &left_a, &left_b);
 	d_r = recursivo ((&ord_x[size_l]), ord_y_r, size_r, &right_a, &right_b);
+	//-----------------------------------------------------
+	//**************************************************************************
+	//CONQUISTA
+	//verifica qual dos lados retorna a menor distancia e atualiza os valores de acordo
 	if (d_l <= d_r)
 	{
 		d = d_l;
@@ -302,6 +323,9 @@ float recursivo (Ponto** ord_x, Ponto** ord_y, int size, Ponto** first, Ponto** 
 		*first = right_a;
 		*second = right_b;
 	}
+	//-----------------------------------------------------
+	//Atualiza os vetores em y de cadalado para possuir apenas os que estao na regiao
+	//delimitada por d a partir do x central
 	l=0;
 	for (int i =0; i< size_l; i++)
 	{
@@ -320,46 +344,39 @@ float recursivo (Ponto** ord_x, Ponto** ord_y, int size, Ponto** first, Ponto** 
 			r++;
 		}
 	}
-	int minj = 0;
-	/*if (mid_x > 6808.0 && mid_x <= 6809.0)
-	{
-		printf ("min: %f, mid: %f, max: %f, l:%f\n", ord_x[0]->x, mid_x, ord_x[size-1]->x, d_l);
-		for (int i = 0; i< size; i++)
-		{
-			printf("ponto %d : (%f, %f)\n",i, ord_x[i]->x, ord_x[i]->y);
-		}
-		for (int i = 0; i< size_l; i++)
-		{
-			printf("ponto %d : (%f, %f)\n",i, ord_y_l[i]->x, ord_y_l[i]->y);
-		}
-		for (int i = 0; i< size_r; i++)
-		{
-			printf("ponto %d : (%f, %f)\n",i, ord_y_r[i]->x, ord_y_r[i]->y);
-		}
-	}*/
+	//-----------------------------------------------------
+	//procura os pontos que fazem parte da "hitbox" de cada ponto
+	int minj = 0;	
 	for (int i = 0; i<l; i++)
 	{
 		for (int j = minj; j<r; j++)
 		{
+			//como ambos os vetores são crescentes, se um ponto ja ficou par atras,
+			//nao precisa ser utilizado novamente
 			if (ord_y_r[j]->y< ord_y_l[i]->y-d)
 			{
 				minj++;
 				continue;
 			}
+			//se for crescente, nao adianta continuar percorrendo com esse i
 			if (ord_y_r[j]->y> ord_y_l[i]->y+d)
 			{
 				j--;
 				break;
 			}
+			//se passou das etapas anteriores, j esta na "hitbox" de x
+			//verifica se a distancia entre eles é menor que a minima
 			float dist_mid = distance(ord_y_l[i], ord_y_r[j]);
 			if (dist_mid < d)
 			{
-				//printf("mid:%f\n", dist_mid);
 				d = dist_mid;
 				*first = ord_y_l[i];
 				*second = ord_y_r[j];
 			}
 		}
 	}
+	//-----------------------------------------------------
+	free(ord_y_r);
+	free(ord_y_l);
 	return d;
 }
