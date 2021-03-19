@@ -4,12 +4,18 @@
 int main ()
 {
 	/**********************************************/
+	//tamanho da entrada
 	int size = 10;
+	//distancia minima
 	float dist = 0;
+	//vetor de entrada
 	Ponto* inputs;
+	//ponteiro para pontos mais proximos
 	Ponto* menor_a, *menor_b;
+	//ponteiro para arquivo txt de entrada e saida
 	FILE *f_inputs, *f_outputs;	
 	/**********************************************/
+	//inicializa os arquivos
 	if ((f_inputs = fopen(INPUTS, "r")) == NULL)
 	{
 			return -1;
@@ -19,12 +25,15 @@ int main ()
 			return -1;
 	}
 	/**********************************************/
+	//recebe o tamanho da entrada (com problema, arrumar)
 	printf ("size: %d\n", size);
 	size = fscanf(f_inputs, "%d", &size);
 	printf ("size: %d\n", size);
 	size = 10;
+	//aloca o espaco para o vetor de entrada
 	inputs = (float*) malloc (size * sizeof(Ponto));
 	/**********************************************/
+	//le os valor de entrada e passa para ovetor de pontos
 	for (int i = 0; i< size; i++)
 	{
 		fscanf(f_inputs, "%f", &(inputs[i].x));
@@ -35,14 +44,19 @@ int main ()
 		printf("ponto %d : (%f, %f)\n",i, inputs[i].x, inputs[i].y);
 	}
 	/**********************************************/
+	//mede o tempo de execucao do forca bruta em ms
 	clock_t begin = clock();
-	dist = forca_bruta (inputs, size, &menor_a, &menor_b);clock_t end = clock();
+	dist = forca_bruta (inputs, size, &menor_a, &menor_b);
+	clock_t end = clock();
 	double time_spent = (double)(end - begin)/1000;	
 	/**********************************************/
+	//imprime o resultado na tela e no arquivo de saida
 	printf("menor distancia : %f, entre (%f, %f), e (%f, %f)\n tempo: %lfms",
 	 dist, menor_a->x, menor_a->y, menor_b->x, menor_b->y, time_spent);	
+	//imprime no arquivo para quando formos fazer os graficos
 	fprintf(f_outputs, "%d %lf\n", size, time_spent);
 	/**********************************************/
+	//fecha os arquivos e desaloca o vetor
 	fclose (f_outputs);
 	fclose (f_inputs);
 	free (inputs);
@@ -73,10 +87,11 @@ float distance (Ponto* first, Ponto* second)
 {
 	float dist;
 	dist = (first->x - second->x)* (first->x - second->x)+ (first->y - second->y)* (first->y - second->y);
-	dist = sqrt (dist);
+	//dist = sqrt (dist);
 	return dist;
 }
 
+//calcula a distancia entre todos os pontos
 float forca_bruta (Ponto* inputs, int size, Ponto** first, Ponto** second)
 {
 	int dist  = FLT_MAX;
@@ -93,10 +108,11 @@ float forca_bruta (Ponto* inputs, int size, Ponto** first, Ponto** second)
 			}
 		}
 	}
+	dist = sqrt(dist);
 	return dist;
 }
 
-// Funcao de ordenacao O(m+n)
+// Funcao de ordenacao O(nlogn)
 void merge_sort(Ponto* vectorPoints, int p, int r)
 {
 	// A condicao de recursao e de que a lista tenha mais que um elemento
@@ -174,3 +190,11 @@ void merge(Ponto* vectorPoints, int p, int q, int r)
 	free(left);
 	free(rigth);
 }
+
+
+float divisao_e_conquista (Ponto* inputs, int size, Ponto** first, Ponto** second)
+{
+	
+}
+
+float recursivo (Ponto** ord_x, Ponto** ord_y, Ponto** first, Ponto** second);
