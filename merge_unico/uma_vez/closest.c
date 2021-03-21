@@ -177,7 +177,20 @@ void merge(Ponto** vectorPoints, int p, int q, int r, char tipo)
 			if (tipo == 'x')
 			{
 				// Compara qual o menor elemento, e adicona ele na lista original
-				if(left[posL]->x > rigth[posR]->x)
+				if (left[posL]->x == rigth[posR]->x)
+				{
+					if (left[posL]->y < rigth[posR]->y)
+					{
+						vectorPoints[i] = left[posL];
+						posL++;
+					}
+					else
+					{
+						vectorPoints[i] = rigth[posR];
+						posR++;
+					}
+				}
+				else if(left[posL]->x > rigth[posR]->x)
 				{
 					vectorPoints[i] = rigth[posR];
 					posR++;
@@ -283,26 +296,47 @@ float recursivo (Ponto** ord_x, Ponto** ord_y, int size, Ponto** first, Ponto** 
 	Ponto* left_a , *left_b, *right_a, *right_b;
 	//inicializa os vetores
 	ord_nxt = (Ponto**) malloc (size * sizeof(Ponto*));
-	ord_y_l = ord_nxt;
-	ord_y_r = &(ord_nxt[size_l]);
+	ord_y_l= ord_y;
+	ord_y_r = &(ord_y[size_l]);
 	//**************************************************************************
 	//ETAPA DE DIVISÃO
 	int l =0, r = 0;
 	//vai copiar os valores de y para novos vetores que serão usados nas chamadas recursivas
+	for (int i =0; i<size; i++)
+	{
+		ord_nxt[i] = ord_y[i];
+	}
 	for (int i =0; i< size; i++)
 	{
 	//se o ponto esta na esquerda, passa o ponto para a lista de y da esquerda
-		if ((ord_y[i]->x <= mid_x|| ord_y[i] == ord_x[mid]) && l<size_l )
+		if (ord_nxt[i]->x == mid_x && ord_nxt[i] != ord_x[mid])
+		{			
+			if (ord_nxt[i]->y<ord_x[mid]->y)
+			{
+				ord_y_l[l] = ord_nxt[i];
+				l++;
+			}
+			else
+			{
+				ord_y_r[r] = ord_nxt[i];
+				r++;
+			}
+		}
+		else if ((ord_nxt[i]->x < mid_x|| ord_nxt[i] == ord_x[mid]) && l<size_l )
 		{
-			ord_y_l[l] = ord_y[i];
+			ord_y_l[l] = ord_nxt[i];
 			l++;
 		}
 	//se o ponto esta na direita, passa o ponto para a lista de y da direita
 		else 
 		{
-			ord_y_r[r] = ord_y[i];
+			ord_y_r[r] = ord_nxt[i];
 			r++;
 		}
+	}
+	for (int i =0; i< size; i++)
+	{
+		ord_nxt[i] = ord_y[i];
 	}
 	//-----------------------------------------------------
 	//chamadas recursivas
@@ -326,7 +360,9 @@ float recursivo (Ponto** ord_x, Ponto** ord_y, int size, Ponto** first, Ponto** 
 	}
 	//-----------------------------------------------------
 	//Atualiza os vetores em y de cadalado para possuir apenas os que estao na regiao
-	//delimitada por d a partir do x central
+	//delimitada por d a partir do x central	
+	ord_y_l = ord_nxt;
+	ord_y_r = &(ord_nxt[size_l]);
 	l=0;
 	for (int i =0; i< size_l; i++)
 	{
@@ -376,7 +412,7 @@ float recursivo (Ponto** ord_x, Ponto** ord_y, int size, Ponto** first, Ponto** 
 			}
 		}
 	}
-	//-----------------------------------------------------
+	//-----------------------------------------------------*/
 	free(ord_nxt);
 	return d;
 }
