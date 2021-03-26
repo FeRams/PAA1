@@ -262,6 +262,7 @@ float divisao_e_conquista (Ponto* inputs, int size, Ponto** first, Ponto** secon
 float recursivo (Ponto** ord_x, Ponto** ord_y, int size, Ponto** first, Ponto** second)
 {	
 	//-----------------------------------------------------
+	//CONQUISTA
 	//caso base-> testa todos contra todos
 	if (size <= 3)
 	{
@@ -292,9 +293,11 @@ float recursivo (Ponto** ord_x, Ponto** ord_y, int size, Ponto** first, Ponto** 
 	float mid_x = ord_x[mid]->x;
 	//vetores que vão ser usados para as chamadas recursivas
 	Ponto** ord_y_l, **ord_y_r, **ord_nxt;
-	//vetores que vao salvar os pontos de distancia minima na esquerda e direita
+	//ponteiros que vao salvar os pontos de distancia minima na esquerda e direita
 	Ponto* left_a , *left_b, *right_a, *right_b;
 	//inicializa os vetores
+	//ord_nxt é um vetor auxiliar para manter a ordenação de y
+	//após as chamadas recursivas
 	ord_nxt = (Ponto**) malloc (size * sizeof(Ponto*));
 	ord_y_l= ord_y;
 	ord_y_r = &(ord_y[size_l]);
@@ -308,20 +311,35 @@ float recursivo (Ponto** ord_x, Ponto** ord_y, int size, Ponto** first, Ponto** 
 	}
 	for (int i =0; i< size; i++)
 	{
-	//se o ponto esta na esquerda, passa o ponto para a lista de y da esquerda
+		//testa se existe um ponto com x identico ao do ponto central
+		//caso muito comum acima de 20k pontos
+		//foi usado y como critério de desempate no merge sort
+		//para solucionar esse impasse
 		if (ord_nxt[i]->x == mid_x && ord_nxt[i] != ord_x[mid])
 		{			
+			//se o y do ponto for menor que o do ponto central, vai para a esquerda
 			if (ord_nxt[i]->y<ord_x[mid]->y)
 			{
 				ord_y_l[l] = ord_nxt[i];
 				l++;
 			}
-			else
+			//se o y do ponto for maior que o do ponto central, vai para a direita
+			else if (ord_nxt[i]->y>ord_x[mid]->y)
 			{
 				ord_y_r[r] = ord_nxt[i];
 				r++;
 			}
+			//se y for igual, a distancia entre ele e o ponto central é 0,
+			// que é a mínima possível
+			else 
+			{
+				*first = ord_nxt[i];
+				*second = ord_x[mid];
+				free(ord_nxt);
+				return 0.0;
+			}
 		}
+	//se o ponto esta na esquerda, passa o ponto para a lista de y da esquerda
 		else if ((ord_nxt[i]->x < mid_x|| ord_nxt[i] == ord_x[mid]) && l<size_l )
 		{
 			ord_y_l[l] = ord_nxt[i];
@@ -334,6 +352,9 @@ float recursivo (Ponto** ord_x, Ponto** ord_y, int size, Ponto** first, Ponto** 
 			r++;
 		}
 	}
+	//a separação em direita e esquerda será usada também na combinação
+	//logo, é feito um "backup" de ord_y, pois
+	//o mesmo voltara das chamadas recursivas desordenado
 	for (int i =0; i< size; i++)
 	{
 		ord_nxt[i] = ord_y[i];
@@ -344,7 +365,7 @@ float recursivo (Ponto** ord_x, Ponto** ord_y, int size, Ponto** first, Ponto** 
 	d_r = recursivo ((&ord_x[size_l]), ord_y_r, size_r, &right_a, &right_b);
 	//-----------------------------------------------------
 	//**************************************************************************
-	//CONQUISTA
+	//COMBINAÇÃO
 	//verifica qual dos lados retorna a menor distancia e atualiza os valores de acordo
 	if (d_l <= d_r)
 	{

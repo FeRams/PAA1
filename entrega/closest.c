@@ -265,6 +265,7 @@ float divisao_e_conquista (Ponto* inputs, int size, Ponto** first, Ponto** secon
 float find_closest (Ponto** ord_x, Ponto** ord_y, int size, Ponto** first, Ponto** second)
 {	
 	//-----------------------------------------------------
+	//CONQUISTA
 	//caso base-> testa todos contra todos
 	if (size <= 3)
 	{
@@ -367,7 +368,7 @@ float find_closest (Ponto** ord_x, Ponto** ord_y, int size, Ponto** first, Ponto
 	d_r = find_closest ((&ord_x[size_l]), ord_y_r, size_r, &right_a, &right_b);
 	//-----------------------------------------------------
 	//**************************************************************************
-	//CONQUISTA
+	//COMBINAÇÃO
 	//verifica qual dos lados retorna a menor distancia e atualiza os valores de acordo
 	if (d_l <= d_r)
 	{
