@@ -32,7 +32,7 @@ int main (int argc, char *argv[])
     float time_spent = (float)(end - begin)/1000000;
 //-------------------------------------------------------------------
     //imprime no terminal
-    cout<< time_spent <<" "<<distancia_total;
+    cout<< time_spent <<" "<<distancia_total<< "\n";
 }
 
 
