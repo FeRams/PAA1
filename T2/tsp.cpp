@@ -1,6 +1,8 @@
-#include "tsp.h"
+//feito por:
+//Felipe Negrelli Wolter, RA: 1607766
+//Luan Carlos Klein, RA: 2022613
 
-#include <fstream>
+#include "tsp.h"
 
 int main (int argc, char *argv[])
 {
@@ -120,6 +122,7 @@ void prim(Grafo* grafo)
     {
         // Remove a raiz
         u = h.remove();
+        //h.mostraHeap();
 //-------------------------------------------------------------------
         // insere no grafo a menor aresta de corte
         if (u->pai != NULL)
@@ -143,9 +146,8 @@ void prim(Grafo* grafo)
                 // Se fizer, entao verifica os custo, e atualiza 
                 if (v->custo > e->custo)
                 {
-                    v->setCusto(e->custo);
+                    h.atualizarChave(v, e->custo);
                     v->setPai(u);
-                    h.heapify(v);
                 } 
             }
         }
@@ -187,8 +189,8 @@ float buscaEmProfundiade(Grafo* grafo)
 //-------------------------------------------------------------------
 //parte recursiva da busca em profundidade
 //insere uma aresta entre o vertice que esta sendo visitado e o anterior a ele
-//ENTRADA: ??
-//SAIDA: ??
+//ENTRADA: vertice com suas respectivas adjacencias
+//SAIDA: arestas do ciclo inseridas para os vertices em niveis inferiores ao de entrada 
 Vertice* buscaRecursivo(Vertice* vertice, Vertice* ultimo, float* distancia_total)
 {
     Vertice* u;
@@ -214,36 +216,6 @@ Vertice* buscaRecursivo(Vertice* vertice, Vertice* ultimo, float* distancia_tota
     }
     return ultimo;
 }
-
-//-------------------------------------------------------------------
-
-
-//OBSOLETO
-// FUNCAO PARA MOSTRAR O RESULTADO DO ALGORITMO DE PRIM
-
-// Acredito que a busca em profundidade vai ser algo bem semelhante
-// Para facilitar, usa o ->pai de cada vertice.
-/*
-void imprimeCaminhoPrim(Grafo* grafo)
-{    
-    fstream saida;
-    saida.open("prim.txt", ios::out);
-    for (int i = 0; i< grafo->vertices.size(); i++)
-    {
-        cout << "ID: " << grafo->vertices[i]->id << "\n";
-        if (grafo->vertices[i]->pai != NULL)
-        {
-            cout << "ID pai: " << grafo->vertices[i]->pai->id << "\n";
-            saida<<grafo->vertices[i]->ponto->x << " " << grafo->vertices[i]->ponto->y <<"\n";
-            saida<<grafo->vertices[i]->pai->ponto->x << " " << grafo->vertices[i]->pai->ponto->y <<"\n";
-            saida<< "\n";
-        }
-        
-    }
-
-  
-    saida.close();
-}*/
 
 //-------------------------------------------------------------------
 //Imprime o ciclo

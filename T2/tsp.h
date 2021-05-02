@@ -1,3 +1,7 @@
+//feito por:
+//Felipe Negrelli Wolter, RA: 1607766
+//Luan Carlos Klein, RA: 2022613
+
 #include <iostream>
 #include <fstream>
 #include <math.h>
@@ -9,7 +13,7 @@ using namespace std;
 class Vertice;
 
 
-
+//classe que representa um ponto 2D
 class Ponto
 {
   public:
@@ -22,20 +26,26 @@ class Ponto
     };
 };
 
-
+//representa uma aresta direcional
 class Aresta {   
   public: 
+        //vertice de onde a aresta sai
         Vertice* origem;
+        //vertice para o qual a aresta vai
         Vertice* destino;
-        int custo;
+        //custo da aresta (a distancia entre os vertices)
+        float custo;
 };
 
-
+//classe que representa um vertice
 class Vertice 
 {
   public:
+    //posição do ponto que ele representa
     Ponto* ponto;
+    //lista de arestas do vertice
     vector<Aresta*> adjacencias;
+    //identificador da posição em que ele está no arquivo de entrada
     int id;
     
     // Usado para o algoritmo de PRIM
@@ -61,6 +71,7 @@ class Vertice
           delete adjacencias [i];
         }
     };
+    //adiciona no vetor de adjacencias uma aresta nova
     void adicionarAresta(Vertice* destino, float distancia)
     {
       Aresta* aresta = new Aresta ();
@@ -97,10 +108,12 @@ class Vertice
 
 };
 
-
+//classe que representa um grafo por lista de adjacencias
 class Grafo
 {
   public:
+    //guarda um vetor de vertices
+    //as arestas são armazenadas dentro do proprio vertice
     vector<Vertice*> vertices;
 
     Grafo ()
@@ -114,10 +127,12 @@ class Grafo
           delete vertices[i];
         }
     };
+    //insere um novo vertice no final do vetor
     void adicionarVertice(Vertice* vertice)
     {
         vertices.push_back (vertice);
     };
+    //imprime no terminal cada vertice com suas respectivas arestas
     void printGrafo()
     {
         for (int i = 0; i<vertices.size(); i++)
@@ -287,6 +302,25 @@ class Heap
     // Informa que o vertice saiu do heap
     raiz->setPosHeap(-1);
     return raiz;
+  }
+
+  //atualiza a chave de um vertice
+  void atualizarChave(Vertice* vertice, float custo)
+  {
+    //só atualiza se for menor
+    if (custo < vertice->custo)
+      vertice->custo = custo;
+      int i = vertice->posHeap;
+      //enquanto o custo do vertice for menor que o do seu pai
+      while (i>0 && heap[i]->custo < heap[getPai(i)]->custo)
+      {
+        //troca os dois de posição
+        heap[i] = heap[getPai(i)];
+        heap[getPai(i)] = vertice;
+        vertice->setPosHeap(getPai(i));
+        heap[i]->setPosHeap(i);
+        i = vertice->posHeap;
+      }
   }
 };
 
