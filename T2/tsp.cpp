@@ -4,9 +4,12 @@
 
 #include "tsp.h"
 
+//função principal que faz a chamada das funções que implementam as etapas do algoritmo de aproximação
+//complexidade O(n^2*lg(n)) devido ao algoritmo de Prim, etapa mais demorada do algoritmo
 int main (int argc, char *argv[])
 {
 //-------------------------------------------------------------------
+    //da erro caso não seja passado o argumento
     if (argc != 2)
     {
         fprintf(stderr, "favor passar arquivo de pontos\n");
@@ -18,20 +21,38 @@ int main (int argc, char *argv[])
 //-------------------------------------------------------------------
     //algoritmo em si
     //chama função para criar o grafo completo a partir do arquivo passado (etapa 1)
+    //complexidade O(n+m), mas como o grafo é completo, m=O(n^2), ou seja possui complexidade O(n^2)
     Grafo* grafo = criarGrafo(argv[1]);
+
     //chama a função na qual esta implementada o algoritmo de Prim para gerar a AGM (etapa 2)
+    //complexidade O((n+m)*log(n)) = O(n^2*lg(n))
     prim(grafo);
+
+    //para a contagem do tempo para a geração do .txt da arvore
+    clock_t end = clock();
+
     //função para gerar o .txt usado no plot da AGM
+    //complexidade O(n+m), mas como m = n-1 para uma arvore, fica O(n)
     imprimeArvore(grafo);
+
+    //calcula o tempo parcial
+    float time_spent = (float)(end - begin)/1000000;
+    //retoma a contagem do tempo
+    begin = clock();
+
     //chama a função que usa a busca em profundidade para gerar o ciclo (etapa 3)
-    float distancia_total = buscaEmProfundiade(grafo);
+    //complexidade O(n+m), mas como m = n-1 para uma arvore, fica O(n)
+    float distancia_total = buscaEmProfundidade(grafo);
+
+    //para a contagem do tempo
+    end = clock();
+
     //função para gerar o .txt usado no plot da AGM
+    //complexidade O(n+m), mas como m = n para uma ciclo, fica O(n)
     imprimeCiclo(grafo);
 //-------------------------------------------------------------------
-    //para a contagem do tempo
-    clock_t end = clock();
     //calcula o tempo decorrido em segundos
-    float time_spent = (float)(end - begin)/1000000;
+    time_spent += (float)(end - begin)/1000000;
 //-------------------------------------------------------------------
     //imprime no terminal
     cout<<fixed<<setprecision(6)<<time_spent <<" ";
@@ -41,13 +62,15 @@ int main (int argc, char *argv[])
 
 
 //-------------------------------------------------------------------
-//Calcula a distandia euclidiana entre dois pontos
-//ENTRADA: dois pontos
+//Calcula a distancia euclidiana entre dois pontos
+//ENTRADA: dois pontos 2D (a e b)
 //SAIDA: distancia euclidiana entre eles 
+//complexidade O(1), pois são apenas operações aritmeticas
 float distancia (Ponto* a, Ponto* b)
 {
     float dist;
     dist = (a->x - b->x)* (a->x - b->x)+ (a->y - b->y)* (a->y - b->y);
+    //raiz é O(1) pois está sendo aproximada por uma parte de uma série com numero de somas constante
     dist = sqrt (dist);
     return dist;
 }
@@ -56,7 +79,8 @@ float distancia (Ponto* a, Ponto* b)
 //Le o arquivo de entrada
 //Inicializa um grafo completo
 //ENTRADA: arquivo .txt com as coordenadas dos pontos
-//SAIDA: grafo completo 
+//SAIDA: grafo completo, onde cada vértice corresponde a um ponto da entrada
+//complexidade O(n^2)
 Grafo* criarGrafo (char* nome)
 {
     float x, y;
@@ -67,7 +91,8 @@ Grafo* criarGrafo (char* nome)
     //le o tamanho de entrada
     entrada >> tamanho;
     //le todas as entradas
-    for (int i = 0; i< tamanho; i++)
+    //laço repetido n vezes
+    for (int i = 0; i< tamanho; i++)  
     {
         //le a coordenada em x, em y
         entrada >> x;
@@ -78,12 +103,15 @@ Grafo* criarGrafo (char* nome)
         grafo->adicionarVertice(vertice);
     }
     //para cada par de pontos distintos
+    //laço repetido n vezes
     for(int i = 0; i< tamanho; i++)
     {
+        //laço repetido O(n^2) vezes no total
         for (int j = i+1; j<tamanho; j++)
         {
-            //cria um vertice entre eles
+            //calcula a distancia entre os 2 vértices (que será o peso da aresta criada)
             float peso = distancia ((grafo->vertices[i]->ponto), (grafo->vertices[j]->ponto));
+            //cria um vertice entre eles
             grafo->vertices[i]->adicionarAresta(grafo->vertices[j], peso);
             grafo->vertices[j]->adicionarAresta(grafo->vertices[i], peso);
         }
@@ -93,10 +121,11 @@ Grafo* criarGrafo (char* nome)
 
 
 //-------------------------------------------------------------------
-//Algortimo de Prim
+//Algoritmo de Prim
 //Computa uma AGM a partir de um grafo
-//ENTRADA: grafo
+//ENTRADA: grafo com arestas ponderadas
 //SAIDA: grafo representando uma arvore geradora minima do grafo de entrada
+//complexidade O((n+m)*log(n))
 void prim(Grafo* grafo)
 {
     // Cria o heap
@@ -105,9 +134,11 @@ void prim(Grafo* grafo)
     Vertice* u;
     Vertice* v;
     Aresta* e;
-    // Da os valores inicais para cada vertice e adiciona ele no heap
+    // Da os valores inicias para cada vertice e os adiciona no heap
+    // laço repetido n vezes
     for (int i = 0; i < grafo->vertices.size(); i++)
         {
+            //vertice começa com custo infinito (no caso, 999999000)
             grafo->vertices[i]->setCusto(999999000);
             grafo->vertices[i]->setPai(NULL);
             h.insere(grafo->vertices[i]);
@@ -115,13 +146,15 @@ void prim(Grafo* grafo)
     
     //Pega o primeiro elemento, e comeca por ele
     s = grafo->vertices[0];
-    s->setCusto(0);
-    h.heapify(s);
+    //traz ele para o inicio da heap
+    h.atualizarChave(s, 0);
 
-    // Percorre enquanto nao for vazio
+    // Percorre enquanto a heap nao for vazia
+    // laço repetido n vezes, custo total de O(n*log(n)) + O(m*log(n)) = O((n+m)*lg(n))
     while (h.heap.size() > 0)
     {
         // Remove a raiz
+        //complexidade O (log(n)) repetido n vezes
         u = h.remove();
         //h.mostraHeap();
 //-------------------------------------------------------------------
@@ -134,9 +167,10 @@ void prim(Grafo* grafo)
 //-------------------------------------------------------------------
 
         // Percorre os vertices adjacentes a ele
+        //laço repetido um total de m vezes
         for (int i = 0; i<u->adjacencias.size(); i++)
         {
-            // Pega a areesta
+            // Pega a aresta
             e = u->adjacencias[i];
             // Pega o vertice destino
             v = u->adjacencias[i]->destino;
@@ -147,6 +181,7 @@ void prim(Grafo* grafo)
                 // Se fizer, entao verifica os custo, e atualiza 
                 if (v->custo > e->custo)
                 {
+                    //custo de O(log(n)) repetido m vezes
                     h.atualizarChave(v, e->custo);
                     v->setPai(u);
                 } 
@@ -155,6 +190,7 @@ void prim(Grafo* grafo)
 //-------------------------------------------------------------------
         // remove as arestas que saem do vertice
         // isso para deixar no grafo apenas as arestas da arvore
+        // custo total O(m)
         for (int i = 0; i<u->adjacencias.size(); i++)
         {
             delete u->adjacencias[i];
@@ -170,11 +206,14 @@ void prim(Grafo* grafo)
 //gera o ciclo a partir da AGM a partir de uma busca em profundidade
 //ENTRADA: grafo representando uma arvore
 //SAIDA: grafo representando um ciclo e a soma das distancias entre os pontos adjacentes
-float buscaEmProfundiade(Grafo* grafo)
+//complexidade O(n + m)
+float buscaEmProfundidade(Grafo* grafo)
 {
     float distancia_total = 0;
     Vertice* fim;
     //chama a busca recursiva
+    //função recursiva é chamada n vezes, sendo que o custo total dentro delas é O(m)
+    //resultando em uma complexidade de O(n + m)
     fim = buscaRecursivo(grafo->vertices[0], NULL, &distancia_total);
     //---------------------------------------------------------------
     //insere a ultima aresta, para fechar o ciclo
@@ -184,14 +223,15 @@ float buscaEmProfundiade(Grafo* grafo)
     //---------------------------------------------------------------
     return distancia_total;
 }
-//-------------------------------------------------------------------
 
 
 //-------------------------------------------------------------------
 //parte recursiva da busca em profundidade
-//insere uma aresta entre o vertice que esta sendo visitado e o anterior a ele
-//ENTRADA: vertice com suas respectivas adjacencias
+//insere uma aresta entre o vertice que esta sendo visitado e o anterior a ele, formando o ciclo
+//ENTRADA: vertice que está sendo visitado com suas respectivas adjacencias, ponteiro para o último vértice visitado e
+//soma das distancias dos vertices inseridos até a chamada
 //SAIDA: arestas do ciclo inseridas para os vertices em niveis inferiores ao de entrada 
+//complexidade O(n + m) 
 Vertice* buscaRecursivo(Vertice* vertice, Vertice* ultimo, float* distancia_total)
 {
     Vertice* u;
@@ -206,6 +246,7 @@ Vertice* buscaRecursivo(Vertice* vertice, Vertice* ultimo, float* distancia_tota
     }
     ultimo = vertice;
     //chama a função recursiva de busca para os vertices adjacentes a ele
+    //for repetido m vezes durante toda a execução da busca
     for (int i = vertice->adjacencias.size()-1; i >=0; i--)
     {
         u = vertice->adjacencias[i]->destino;
@@ -213,6 +254,7 @@ Vertice* buscaRecursivo(Vertice* vertice, Vertice* ultimo, float* distancia_tota
         delete vertice->adjacencias[i];
         vertice->adjacencias.erase(vertice->adjacencias.begin()+i);
         //chama a busca recursiva
+        //chamada recursiva feita n vezes durante toda a execução da busca
         ultimo = buscaRecursivo(u, ultimo, distancia_total);
     }
     return ultimo;
@@ -220,6 +262,9 @@ Vertice* buscaRecursivo(Vertice* vertice, Vertice* ultimo, float* distancia_tota
 
 //-------------------------------------------------------------------
 //Imprime o ciclo
+//ENTRADA: grafo com um ciclo hamiltoniano
+//SAIDA: arquivo de texto no formato mostrado no pdf de descrição do trabalho para plot do ciclo 
+//complexidade O(n) 
 void imprimeCiclo(Grafo* grafo)
 { 
     fstream saida;
@@ -239,19 +284,24 @@ void imprimeCiclo(Grafo* grafo)
 
 //-------------------------------------------------------------------
 //função para impressão recursiva dos vertices e arestas
+//ENTRADA: vértice e ponteiro para arquivo de saida
+//SAIDA: vertice atual e os subsequentes a ele escritos no arquivo de saida
+//complexidade O(n) 
 void imprimeVertice (Vertice* vertice, fstream* saida)
 {    
-    //std::rotate(vertice->adjacencias.rbegin(), vertice->adjacencias.rbegin() + 1, vertice->adjacencias.rend());
     (*saida) << vertice->ponto->x << " " << vertice->ponto->y <<"\n";
-    for (int i = 0; i < vertice->adjacencias.size(); i++)
+
+    if (vertice->adjacencias[0]->destino->id != 0)
     {
-        if (vertice->adjacencias[i]->destino->id != 0)
-            imprimeVertice(vertice->adjacencias[i]->destino, saida);
+        imprimeVertice(vertice->adjacencias[0]->destino, saida);
     }
 }
 
 //-------------------------------------------------------------------
 //imprime a arvore
+//ENTRADA: grafo com uma arvore
+//SAIDA: arquivo de texto no formato mostrado no pdf de descrição do trabalho para plot da arvore 
+//complexidade O(n) 
 void imprimeArvore (Grafo* grafo)
 {    
     fstream saida;
