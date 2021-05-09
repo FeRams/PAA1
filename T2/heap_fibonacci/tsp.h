@@ -244,7 +244,6 @@ class Heap_Fibonacci
     elemento->fibo_pai = NULL;
     elemento->fibo_filhos = NULL;
     elemento->marcado = 0;
-    elemento->aberto = 0;
 //-------------------------------------------------------------------
     //se for o primeiro elemento inserido
     if(minimo == NULL)
