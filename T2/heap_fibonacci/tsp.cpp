@@ -128,7 +128,6 @@ Grafo* criarGrafo (char* nome)
 //complexidade O((n+m)*log(n))
 void prim(Grafo* grafo)
 {
-    float custo_total = 0;
     // Cria o heap
     Heap_Fibonacci h = Heap_Fibonacci();
     Vertice* s;
@@ -157,8 +156,6 @@ void prim(Grafo* grafo)
         // Remove a raiz
         //complexidade O (log(n)) repetido n vezes
         u = h.remove();
-        custo_total += u->custo;
-        //h.mostraHeap();
 //-------------------------------------------------------------------
         // insere no grafo a menor aresta de corte
         if (u->pai != NULL)
@@ -190,7 +187,6 @@ void prim(Grafo* grafo)
         }
 //-------------------------------------------------------------------
     }
-    cout<<"custo total da arvore: "<<fixed<<setprecision(6)<<custo_total<<endl;
 }
 
 
@@ -352,8 +348,8 @@ void imprimeCiclo(Grafo* grafo)
 
 
     saida.close();
-    system ("gnuplot cycle.plot");
-    system ("xdg-open ciclo.pdf");
+    /*system ("gnuplot cycle.plot");
+    system ("xdg-open ciclo.pdf");*/
 }
 
 
@@ -392,6 +388,6 @@ void imprimeArvore (Grafo* grafo)
         }
     }
     saida.close();
-    system ("gnuplot tree.plot");
-    system ("xdg-open arvore.pdf");
+    /*system ("gnuplot tree.plot");
+    system ("xdg-open arvore.pdf");*/
 }
