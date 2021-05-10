@@ -86,20 +86,18 @@ class Vertice
     //indica o numero de filhos do vertice
     int fibo_grau;
     //indica se teme um filho removido. caso tenha mais de um, sobe na arvore
-    //usado pelo metodo do de corte em cascada. facilita o proecimento de manutenção da
-    //propriedade de grau maximo de uma arvore ser da ordem de log do numero de elementos
-    //nela contidos, permitindo assim a atualização de chave em O(1)
     int marcado;
     //Armazena o custo da menor aresta de corte que chega nele em uma dada iteração do algoritmo de prim
     //é o peso usado pela heap
     float custo;
+    //usado para evitar repetições na impressão da heap
+    int aberto;
     //-------------------------------------------------------------------    
     // os atributos a seguir sao usados para o algoritmo de PRIM
     //O vertice pai do vertice na AGM gerada
     Vertice* pai;
-    // indica se o vertice esta na heap de fibonacci ou não
-    // usado pelo algoritmo de prim para evitar atualizar o custo de 
-    // vértices que não estão na heap
+    // Representa a posicao daquele vertice na heap
+    // Tem duas funcoes: Auxilia no heapify, e quando sair do heap, tem valor negativo, que facilita a verificao para ver se um vertice esta no heap ou nao 
     int posHeap;
     //------------------------------------------------------------------
 
@@ -244,6 +242,7 @@ class Heap_Fibonacci
     elemento->fibo_pai = NULL;
     elemento->fibo_filhos = NULL;
     elemento->marcado = 0;
+    elemento->aberto = 0;
 //-------------------------------------------------------------------
     //se for o primeiro elemento inserido
     if(minimo == NULL)
@@ -585,6 +584,32 @@ class Heap_Fibonacci
         //até encontrar um nó desmarcado ou uma raiz
         corteEmCascata(z);
       }
+    }
+  }
+  void imprime(Vertice* y)
+  {
+    Vertice* x = y;
+    int i = 0;
+    do
+    {
+      cout<<x->id<<"(";
+      if (x->aberto)
+      {
+        i = 30;
+        break;
+      }
+      x->aberto = 1;
+      if(x->fibo_filhos != NULL)
+        imprime(x->fibo_filhos);
+      cout<<")";
+      x->aberto = 0;
+      x = x->fibo_irmao_direita;
+      i++;
+    }while(x != y && i<30);
+    if (i == 30)
+    {
+      cout<<"erro";
+      cin>>a;
     }
   }
 };
