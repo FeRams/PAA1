@@ -1,11 +1,11 @@
 ############################# Makefile ##########################
-all: closest
+all: tsp
 
-closest: closest.o -lm
+closest: tsp.o -lm
 
-closest.o: closest.c closest.h
-		gcc -o closest.o -c closest.c -lm -W -Wall -pedantic
+closest.o: tsp.c tsp.h
+		gcc -o tsp.o -c tsp.c -lm -W -Wall -pedantic
 clean:
 		rm -rf *.o
 mrproper: clean
-		rm -rf closest
+		rm -rf tsp

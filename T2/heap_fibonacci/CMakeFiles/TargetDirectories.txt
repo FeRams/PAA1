@@ -1,0 +1,3 @@
+/home/felipe/Área de Trabalho/2020.2/PAA/trabalhos/PAA1/T2/heap_fibonacci/CMakeFiles/rebuild_cache.dir
+/home/felipe/Área de Trabalho/2020.2/PAA/trabalhos/PAA1/T2/heap_fibonacci/CMakeFiles/edit_cache.dir
+/home/felipe/Área de Trabalho/2020.2/PAA/trabalhos/PAA1/T2/heap_fibonacci/CMakeFiles/tsp.dir

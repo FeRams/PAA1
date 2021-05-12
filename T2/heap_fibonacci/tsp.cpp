@@ -40,7 +40,8 @@ int main (int argc, char *argv[])
     imprimeCiclo(grafo);
 //-------------------------------------------------------------------
     //calcula o tempo decorrido em segundos
-    float time_spent += (float)(end - begin)/1000000;
+    float time_spent;
+    time_spent += (float)(end - begin)/1000000;
 //-------------------------------------------------------------------
     //imprime no terminal
     cout<<fixed<<setprecision(6)<<time_spent <<" ";
@@ -249,7 +250,7 @@ void ordenarAnticlk (Vertice* vertice, Vertice* ultimo)
     //para o calculo dos angulos relativos de cada vertice
     float angulo_entrada = 0;
     //se for o vertice 0, não vai haver vertice anterior e o angulo de entrada
-    //será setado como 0º
+    //será setado como +-90º
     if (ultimo != NULL)
     {
         //vai calcular o angulo de entrada
@@ -339,8 +340,6 @@ void imprimeCiclo(Grafo* grafo)
 
 
     saida.close();
-    /*system ("gnuplot cycle.plot");
-    system ("xdg-open ciclo.pdf");*/
 }
 
 
@@ -379,6 +378,4 @@ void imprimeArvore (Grafo* grafo)
         }
     }
     saida.close();
-    /*system ("gnuplot tree.plot");
-    system ("xdg-open arvore.pdf");*/
 }

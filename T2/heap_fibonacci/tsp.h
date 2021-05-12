@@ -202,7 +202,7 @@ class Grafo
 //implementação de um heap minimo de fibonacci
 //armazena uma lista circular de arvores (com os irmãos sendo implementados como uma lista duplamente encadada)
 //e onde os filhos também conhecem seus pais. Cada árvore obedece as propriedades de uma heap
-//a heap apresenta um ponteiro para a rais de menor custo
+//a heap apresenta um ponteiro para a raiz de menor custo
 //utilizado para seleção do proximo vertice a ser inserido na arvore no algoritmo de Prim
 class Heap_Fibonacci
 {
@@ -293,7 +293,7 @@ class Heap_Fibonacci
       if (removido ->fibo_filhos !=NULL)
       {
         Vertice* atual = removido->fibo_filhos;
-        //laço repetido O(log(n)) vezes ???
+        //laço repetido O(log(n)) vezes
         do 
         {
         	//define os filhos como raizes
@@ -386,8 +386,8 @@ class Heap_Fibonacci
           //condição para decidir corretamente o nó a ser setado como atual após encerrado o loop
           if (novo->fibo_irmao_direita != novo)
           {
-			atual->fibo_irmao_direita = novo->fibo_irmao_direita;
-			atual->fibo_irmao_esquerda = novo->fibo_irmao_esquerda;
+      			atual->fibo_irmao_direita = novo->fibo_irmao_direita;
+      			atual->fibo_irmao_esquerda = novo->fibo_irmao_esquerda;
           }
           else
           {
@@ -410,7 +410,7 @@ class Heap_Fibonacci
       {
         atual = NULL;
       }
-      //se restares arvores a analisar, remove o nó atual da lista de raizes para que não seja repetido
+      //se restarem arvores a analisar, remove o nó atual da lista de raizes para que não seja repetido
       else
       {
         atual->fibo_irmao_direita->fibo_irmao_esquerda = atual->fibo_irmao_esquerda;
@@ -573,7 +573,7 @@ class Heap_Fibonacci
     	//significa que é a primeira remoção
       if (y->marcado == 0)
       {
-      	//por eisso, y é apenas marcado
+      	//por isso, y é apenas marcado
         y->marcado = 1;
       }
       //se for a segunda remoção
@@ -643,8 +643,17 @@ float buscaEmProfundidade(Grafo* grafo);
 //SAIDA: arestas do ciclo inseridas para os vertices em niveis inferiores ao de entrada 
 //complexidade O(n + m) 
 Vertice* buscaRecursivo(Vertice* vertice, Vertice* ultimo, float* distancia_total);
-
+//-------------------------------------------------------------------
+//função para ordenar as arestas de um vértice em sentido anti-horario a partir da aresta de entrada
+//ENTRADA: vértice com arestas a serem ordenadas e vértice visitado imediatamente antes dele
+//SAIDA: arestas do vetor ordenadas em sentido anti-horario a partir da aresta de entrada
+//complexidade O(n*log(n)) 
 void ordenarAnticlk (Vertice* vertice, Vertice* ultimo);
+//-------------------------------------------------------------------
+//Criterio de ordenação utilizado pelo sort
+//ENTRADA: dois vertices (a e b)
+//SAIDA: TRUE se o angulo de a for menor que o de b 
+//complexidade O(1) 
 bool criterioOrd(Vertice* a, Vertice* b);
 
 

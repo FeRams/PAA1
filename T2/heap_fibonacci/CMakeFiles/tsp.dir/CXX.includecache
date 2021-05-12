@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/felipe/Área de Trabalho/2020.2/PAA/trabalhos/PAA1/T2/heap_fibonacci/tsp.cpp
+tsp.h
+/home/felipe/Área de Trabalho/2020.2/PAA/trabalhos/PAA1/T2/heap_fibonacci/tsp.h
+
+/home/felipe/Área de Trabalho/2020.2/PAA/trabalhos/PAA1/T2/heap_fibonacci/tsp.h
+iostream
+-
+fstream
+-
+math.h
+-
+vector
+-
+algorithm
+-
+time.h
+-
+iomanip
+-
+iterator
+-
+
